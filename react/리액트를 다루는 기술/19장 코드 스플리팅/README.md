@@ -1,0 +1,11 @@
+## 19장 코드 스플리팅
+
+
+
+- 코드 스플리팅이란? 파일을 분리하는 작업
+- 효율적인 캐싱 효과와 코드 비동기 로딩으로 인한 속도 향상 효과가 있다.
+- 코드 스플리팅 방법
+  - 리액트의 내장함수인 `React.lazy` 와 `Suspense` 를 이용하는 방법 (아쉽게도 SSR을 지원하지 않는다.)
+  - (react lazy 공식문서)[https://ko.reactjs.org/docs/code-splitting.html#reactlazy]
+  - `@loadable/component` 라이브러리의 `loadable` 를 이용하는 방법 (SSR을 지원한다.)
+  - (react loadable 공식문서)[https://github.com/jamiebuilds/react-loadable#readme]
