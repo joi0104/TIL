@@ -1,4 +1,4 @@
-## 11장 API 리팩터링
+11장 API 리팩터링
 
 
 
@@ -321,3 +321,381 @@ function raise(aPerson, factor) {
   else if (thePlan.targetTemperature(thermostat.selectedTemperature) < thermostat.currentTemperature ) setToCool();
   else setOff();
   ```
+
+
+
+### 11.7 세터 제거하기
+
+- 세터가 없다는 것은 해당 필드는 오직 생성자에 의해 설정되며 수정하지 않고 변경 가능성을 봉쇄한다는 의미이다.
+- 세터를 제거하는 상황은 두가지이다.
+  - 사람들이 무조건 접근자 메서드를 통해서만 필드를 다루려 할 때
+  - `생성 스크립트`를 사용해 객체를 생성할 때
+  - 여기서 `생성 스크립트`란 생성자를 호출한 후 일련의 세터를 호출하여 객체를 완성하는 형태의 코드를 말한다.
+
+- 예시는 다음과 같다.
+
+```javascript
+//수정 전
+class Person {
+  get name() { return this._name; }
+  set name(arg) { return this._name = arg; }
+  get id() { return this._id; }
+  set id(arg) { return this._id = arg; }
+}
+
+const martion = new Person();
+martin.name = "마틴";
+martin.id = "1234";
+```
+
+```javascript
+//수정 후
+class Person {
+  constructor(id) {
+    this._id = id;
+  }
+  get name() { return this._name; }
+  set name(arg) { return this._name = arg; }
+  get id() { return this._id; }
+  //set id()를 없애고 생성자에 인라인 시켰다.
+}
+
+const martion = new Person();
+martin.name = "마틴";
+```
+
+
+
+### 11.8 생성자를 팩터리 함수로 바꾸기
+
+- 생성자란 객체를 초기화하는 특별한 용도의 함수이다. 하지만 생성자는 이상한 제약이 붙기도 한다.
+  - 생성자를 정의한 클래스의 인스턴스를 반환해야 한다. (서브 클래스의 인스턴스나 프락시 X)
+  - 생성자의 이름은 고정되어 있다.
+  - 특별한 연산자를 사용하기 때문에 일반 함수 자리에 사용이 어렵다.
+- 위의 단점들을 `팩터리 함수`로 바꿔서 극복할 수 있다. `팩터리 함수` 를 만드는 가장 단순한 방법은 **생성자를 호출하는 방식** 이다.
+- 예시는 다음과 같다.
+
+```javascript
+//수정 전
+class Employee {
+  constructor(name, typeCode) {
+    this._name = name;
+    this._typeCode = typeCode;
+  }
+  
+  get name() { return this._name; }
+  get type() { return Employee.legalTypeCodes[this._typeCode]; }
+  
+  static get legalTypeCodes(){
+    return {"E": "Engineer", "M": "manager", "S": "Saleperson"};
+  }
+}
+
+const candidate = new Employee(document.name, document,empType);
+const leadEngineer = new Employee(document.leadEngineer, 'E');
+```
+
+```javascript
+//수정 후
+class Employee {
+  constructor(name, typeCode) {
+    this._name = name;
+    this._typeCode = typeCode;
+  }
+  
+  get name() { return this._name; }
+  get type() { return Employee.legalTypeCodes[this._typeCode]; }
+  
+  static get legalTypeCodes후){
+    return {"E": "Engineer", "M": "manager", "S": "Saleperson"};
+  }
+}
+
+
+function createEmployee(name,typeCode) {
+  return new Employee(name,typeCode);
+}
+
+function createEngineer(name) {
+  return new Employee(name, 'E');
+}
+
+const candidate = createEmployee(document.name, document,empType);
+const leadEngineer = createEngineer(document.leadEngineer);
+```
+
+
+
+### 11. 9 함수를 명령으로 바꾸기
+
+- 요청 자체를 캡슐화 하여 사용자를 매개변수로 바꾸고 대기, 로깅, 되돌리기 등을 수행할 수 있도록 하는 객체를 `명령 객체` 혹은 `명령` 이라고 부른다. (참고로 여기서의 `명령` 은 `명령-질의 분리원칙` 과 다르다.)
+- 즉, `명령 객체` 는 메서드의 호출를 객체화 했다는 것이다.
+- `명령` 의 장점은 다음과 같다.
+  - 되돌리기 같은 보조연산을 제공하며 수명주기를 제어하는 데 필요한 매개변수를 만들어주는 메서드도 제공한다.
+  - 상속과 훅을 이용할 수 있다.
+  - 명령을 이용해 일급 함수 기능의 대부분을 흉내낼 수 있다.
+  - 중첩함수를 지원하지 않는 언어에서도 복잡한 함수를 쪼갤 수 있고 테스트와 디버깅에 직접 이용할 수 있다.
+- 예시는 다음과 같다.
+
+```javascript
+//수정 전
+function score(candidate, medicalExam, scoringGuide) {
+  let result = 0;
+  let healthLevel = 0;
+  let highMedicalRiskFlag = false;
+  
+  if(medicalExam.isSmoker) {
+    healthLevel += 10;
+    highMedicalRiskFlah = true;
+  }
+  let certificationGrade = 'regular';
+  if (scoreingGuide.startWithLowCertification(cadidate.originState)) {
+    certificationGrade = 'low';
+    result -= 5;
+  }
+  ...
+  result -= Math.max(healthLevel - 5, 0);
+  return result;
+}
+```
+
+```javascript
+//수정 후
+function score(candidate, medicalExam, scoringGuide) {
+  return new Scorer(candidate, medicalExam, scoringGuide).execute();
+}
+
+class Scorer {
+  constructor(candidate, medicalExam, scoringGuide) {
+    this._candidate = candidate;
+    this._medicalExam = medicalExam;
+    this._scoringGuide = scoringGuide;
+  }
+  
+  execute() {
+  	let result = 0;
+  	let healthLevel = 0;
+    let highMedicalRiskFlag = false;
+
+    if(medicalExam.isSmoker) {
+      healthLevel += 10;
+      highMedicalRiskFlah = true;
+    }
+    let certificationGrade = 'regular';
+    if (scoreingGuide.startWithLowCertification(cadidate.originState)) {
+      certificationGrade = 'low';
+      result -= 5;
+    }
+    ...
+    result -= Math.max(healthLevel - 5, 0);
+    return result;
+  }
+}
+```
+
+```javascript
+//되돌리기
+function score(candidate, medicalExam, scoringGuide) {
+  return new Scorer(candidate, medicalExam, scoringGuide).execute();
+}
+
+class Scorer {
+  constructor(candidate, medicalExam, scoringGuide) {
+    this._candidate = candidate;
+    this._medicalExam = medicalExam;
+    this._scoringGuide = scoringGuide;
+  }
+  
+  execute() {
+  	this._result = 0;
+  	this._healthLevel = 0;
+    this._highMedicalRiskFlag = false;
+
+    this.scoreSmoking();
+    this._certificationGrade = 'regular';
+    if (this._scoreingGuide.startWithLowCertification(this._cadidate.originState)) {
+      this._certificationGrade = 'low';
+      this._result -= 5;
+    }
+    ...
+    this._result -= Math.max(healthLevel - 5, 0);
+    return this._result;
+  }
+  
+  scoreSmoking() {
+    if(this._medicalExam.isSmoker) {
+      this._healthLevel += 10;
+      this._highMedicalRiskFlah = true;
+    }
+  }
+}
+
+```
+
+
+
+### 11.10 명령을 함수로 바꾸기
+
+- `명령 객체` 는 비용이 많이 들기 때문에, 크게 복잡하지 않다면 그저 함수를 하나 호출하는 것이 좋다.
+- 예시는 다음과 같다.
+
+```javascript
+//수정 전
+function charge(customer, usage, provider) {
+  const baseCharge = customer.baseRate * usage;
+  return baseCharge * provider.connectionCharge;
+}
+const monthCharge = charge(customer, usage, provider);
+```
+
+
+
+### 11.11 수정된 값 반환하기
+
+- 데이터가 수정됨을 알기 위한 방법으로는 변수를 갱신하는 함수에 수정된 값을 반환하여 호출자가 그 값을 변수에 담아두도록 하는 방법이 있다.
+- 이 방식은 호출자 코드를 읽을 때 **변수가 갱신도리 것임** 을 분명히 인지하게 된다.
+- 값 하나를 계산한다는 분명한 목적이 있는 함수들에게 가장 효과적이다.
+- 예시는 다음과 같다.
+
+```javascript
+//수정 전
+let totalAscent = 0;
+let totalTime = 0;
+let totalDistance = 0;
+calculateAscent();
+calculateTime();
+calculateDistance();
+const pace = totalTime/60/totalDistance;
+
+function calculateAscent() {
+  for(let i=1; i < point.length; i++) {
+    const varticalChange = points[i].elevation - points[i-1].elevation;
+    totalAscent += (verticalChange > 0)? verticalChange : 0;  //totalAscent가 갱신된다는 사실이 드러나지 않는다.
+  }
+}
+```
+
+```javascript
+//수정 후
+let totalAscent = calculateAscent();
+let totalTime = calculateTime();
+let totalDistance = calculateDistance();
+const pace = totalTime/60/totalDistance;
+
+function calculateAscent() {
+  let result = 0'
+  for(let i=1; i < point.length; i++) {
+    const varticalChange = points[i].elevation - points[i-1].elevation;
+    result += (verticalChange > 0)? verticalChange : 0;  //totalAscent가 갱신된다는 사실이 드러나지 않는다.
+  }
+  return result;
+}
+```
+
+
+
+### 11.12 오류 코드를 예외로 바꾸기
+
+- `오류 코드` : 오류의 상태를 숫자로 정의한 코드를 반환해서 오류를 처리하는 방법. 누군가 처리하기를 바라며 콜스택 위로 던져야 했다.
+- `예외` : 독립적인 오류 처리 매커니즘. 오류가 발견하면 예외를 던진다. 
+  - 오류 코드를 일일이 검사하거나 콜스택 위로 던지는 일을 신경쓰지 않아도 된다.
+  - 또한, 독자적인 흐름이 있어서 프로그램의 나머지는 오류 발생에 따른 복잡한 상황에 대해 대처하지 않아도 된다.
+  - 예외의 경우, **정상 동작 범주에 들지 않는 오류를 나타낼 때** 만 쓰여야 한다. 예외대신 프로그램 종료코드를 사용해도 여전히 동작해야 한다.
+- 예시는 다음과 같다.
+
+```javascript
+//수정 전
+function localShippingRules(country) {
+  const data = countryData.shippingRules(country);
+  if (data) return new ShippingRules(data);
+  else return -23;
+}
+
+function calculateShippingCosts(anOrder) {
+  ...
+  const shippingRules = localShippingRules(anOrder.country);
+  if (shippingRules < 0) return shippingRules;
+  ...
+}
+
+const status = calculateShippingCosts(orderData);
+if (status < 0) return shippingRules;
+```
+
+```javascript
+//수정 후
+function localShippingRules(country) {
+  const data = countryData.shippingRules(country);
+  if (data) return new ShippingRules(data);
+  else throw new OrderProcessingError(-23); //에외를 던지면 콜스텍 위로 전달하는 일은 예외 매커니즘이 대신 처리해준다.
+}
+
+function calculateShippingCosts(anOrder) {
+  ...
+  const shippingRules = localShippingRules(anOrder.country);
+  ...
+}
+
+class OrderProcessingError extends Error {
+  constructor(errorCode) {
+    super();
+    this._errorCode = errorCode;
+  }
+  get name() { return "OrderProcessingError"; }
+}
+
+
+try {
+  calculateShippingCosts(orderData);
+} catch (e) {
+  if (e instanceof OrderProcessingError) errorList.push({order: orderData, errorCode: e.code})
+  else throw e;
+}
+```
+
+
+
+### 11.13 예외를 사전확인으로 바꾸기
+
+- 정상 동작 범주에 드는 오류일 경우 예외 처리로 대응하기 보다는 조건을 검사하는 `사전 확인`을 사용한다.
+- 예시는 다음과 같다
+
+```java
+//수정 전
+public Resource get() {
+  Resource result;
+  try {
+    result = available.pop();
+    allocated.add(result);
+  } catch (NoSuchElementException e) {
+    result = Resource.create();
+    allocated.add(result);
+  }
+  return result;
+}
+```
+
+```java
+//수정 후
+public Resource get() {
+  Resource result;
+  if (available.isEmpty()) {
+    result = Resource.create();
+    allocated.add(result);
+  } else {
+    result = available.pop();
+    allocated.add(result);
+  }
+  return result;
+}
+```
+
+```java
+//더 가다듬기
+public Resource get() {
+  Resource result = available.isEmpty()? Resource.create() : available.pop();
+  allocated.add(result);
+  return result;
+}
+```
+
