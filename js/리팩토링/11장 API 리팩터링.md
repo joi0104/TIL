@@ -1,4 +1,4 @@
-11장 API 리팩터링
+## 11장 API 리팩터링
 
 
 
@@ -494,7 +494,7 @@ class Scorer {
 ```
 
 ```javascript
-//되돌리기
+//더 가다듬기
 function score(candidate, medicalExam, scoringGuide) {
   return new Scorer(candidate, medicalExam, scoringGuide).execute();
 }
@@ -553,7 +553,7 @@ const monthCharge = charge(customer, usage, provider);
 ### 11.11 수정된 값 반환하기
 
 - 데이터가 수정됨을 알기 위한 방법으로는 변수를 갱신하는 함수에 수정된 값을 반환하여 호출자가 그 값을 변수에 담아두도록 하는 방법이 있다.
-- 이 방식은 호출자 코드를 읽을 때 **변수가 갱신도리 것임** 을 분명히 인지하게 된다.
+- 이 방식은 호출자 코드를 읽을 때 **변수가 갱신될 것임** 을 분명히 인지하게 된다.
 - 값 하나를 계산한다는 분명한 목적이 있는 함수들에게 가장 효과적이다.
 - 예시는 다음과 같다.
 
@@ -586,7 +586,7 @@ function calculateAscent() {
   let result = 0'
   for(let i=1; i < point.length; i++) {
     const varticalChange = points[i].elevation - points[i-1].elevation;
-    result += (verticalChange > 0)? verticalChange : 0;  //totalAscent가 갱신된다는 사실이 드러나지 않는다.
+    result += (verticalChange > 0)? verticalChange : 0;
   }
   return result;
 }
