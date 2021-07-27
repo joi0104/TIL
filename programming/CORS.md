@@ -7,7 +7,7 @@
 
 ## CORS
 
-- 교차 출저 정책. Cross Origin Resource Sharing.
+- 교차 출처 정책. Cross Origin Resource Sharing.
 - 다른 출처간에 리소스를 공유할 수 있도록 하는 브라우저의 보안 정책.
 - 웹 생태계가 다양해지면서 여러 서비스간에 자유롭게 데이터가 주고 받아질 필요가 생기므로써 대두되었다.
 - `CORS`를 허용해줌으로써 `SOP`를 위반하는 출처 또한 리소스를 받아올 수 있다.
