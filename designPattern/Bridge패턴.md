@@ -20,12 +20,12 @@
 
 ### 구조
 
-![](https://t1.daumcdn.net/cfile/tistory/24391F4553E0844D08)
+![](https://t1.daumcdn.net/cfile/tistory/24391F4553E0844D08){: width="50%"}
 
-- `Abstraction` : 추상적 개념에 대한 인터페이스를 제공하고 객체 구현자 `Implementor` 에 대한 참조자를 관리한다.
-- `RefinedAbstraction` : 추상적 개념에 정의된 인터페이스를 확장한다.
-- `Implementor` : 구현하는 클래스에 대한 참조를 가지고 있으며 구현 클래스에 대한 인터페이스를 제공한다. 즉, 실질적인 구현을 제공한 서브클래스들의 공통적인 연산의 시그니처만을 정의한다.
-- `ConcreteImplementor` : `Implementor` 인터페이스를 구현한다.
+- `Abstraction` : 추상적 개념에 대한 인터페이스를 제공하고 객체 구현자 `Implementor` 에 대한 참조자를 관리하는 객체
+- `RefinedAbstraction` : 추상적 개념에 정의된 인터페이스를 확장하는 객체
+- `Implementor` : 구현하는 클래스에 대한 참조를 가지고 있으며 구현 클래스에 대한 인터페이스를 제공하는 객체.
+- `ConcreteImplementor` : `Implementor` 인터페이스를 구현한 객체
 
 ### 협력 방법
 

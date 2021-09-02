@@ -19,7 +19,7 @@
 
 ### 구조
 
-![](https://1.bp.blogspot.com/-AJ5kn0Xthrk/XaM0kbhu8WI/AAAAAAAACMs/g0XRAG7o9Hg6NBXKIDBPwmIY3vAJEdPmwCLcBGAsYHQ/s1600/%25EB%258D%25B0%25EC%25BD%2594%25EB%25A0%2588%25EC%259D%25B4%25ED%2584%25B0%25ED%258C%25A8%25ED%2584%25B4.PNG)
+![](https://1.bp.blogspot.com/-AJ5kn0Xthrk/XaM0kbhu8WI/AAAAAAAACMs/g0XRAG7o9Hg6NBXKIDBPwmIY3vAJEdPmwCLcBGAsYHQ/s1600/%25EB%258D%25B0%25EC%25BD%2594%25EB%25A0%2588%25EC%259D%25B4%25ED%2584%25B0%25ED%258C%25A8%25ED%2584%25B4.PNG){: width="50%"}
 
 - `Component` : 동적으로 추가할 서비스를 가질 가능성이 있는 객체들에 대한 인터페이스
 - `ConcreateComponent` : 추가적인 서비스가 실제로 정의되어야 할 필요가 있는 객체
