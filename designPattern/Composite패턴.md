@@ -16,7 +16,7 @@
 
 ### 구조
 
-![](https://scvgoe.github.io/img/composite.jpg){: width="50%"}
+<img src="https://scvgoe.github.io/img/composite.jpg" width="50%" height="auto">
 
 - `Component` : 집합 관계에 정의될 모든 객체에 대한 인터페이스
 - `Leaf` : 개별 객체, 즉 자식이 없는 객체

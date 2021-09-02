@@ -20,7 +20,7 @@
 
 ### 구조
 
-![](https://t1.daumcdn.net/cfile/tistory/24391F4553E0844D08){: width="50%"}
+<img src="https://t1.daumcdn.net/cfile/tistory/24391F4553E0844D08" width="50%" height="auto">
 
 - `Abstraction` : 추상적 개념에 대한 인터페이스를 제공하고 객체 구현자 `Implementor` 에 대한 참조자를 관리하는 객체
 - `RefinedAbstraction` : 추상적 개념에 정의된 인터페이스를 확장하는 객체
