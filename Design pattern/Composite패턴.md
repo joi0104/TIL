@@ -1,4 +1,4 @@
-## Composite 패턴
+## Composite 패턴 (복합체 패턴)
 
 ### 동기
 

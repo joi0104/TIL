@@ -1,4 +1,4 @@
-## Decorator 패턴
+## Decorator 패턴 (장식자 패턴)
 
 ### 동기
 
