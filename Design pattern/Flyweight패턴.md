@@ -1,4 +1,4 @@
-## Flyweight 패턴
+## Flyweight 패턴 (플라이급 패턴)
 
 ### 동기
 
